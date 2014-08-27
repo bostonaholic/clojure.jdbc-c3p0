@@ -1,20 +1,20 @@
 # clojure.jdbc-c3p0
 
-clojure.jdbc extension for c3p0 (a mature, highly concurrent JDBC
-Connection pooling library).
+c3p0, a mature, highly concurrent JDBC Connection pooling library
+for clojure.jdbc
 
 ## Install
 
 Leiningen
 
 ```clojure
-[clojure.jdbc/clojure.jdbc-c3p0 "0.2.0"]
+[clojure.jdbc/clojure.jdbc-c3p0 "0.3.0"]
 ```
 
 Gradle
 
 ```groovy
-compile "clojure.jdbc:clojure.jdbc-c3p0:0.2.0"
+compile "clojure.jdbc:clojure.jdbc-c3p0:0.3.0"
 ```
 
 Maven
@@ -23,7 +23,7 @@ Maven
 <dependency>
   <groupId>clojure.jdbc</groupId>
   <artifactId>clojure.jdbc-c3p0</artifactId>
-  <version>0.2.0</version>
+  <version>0.3.0</version>
 </dependency>
 ```
 
