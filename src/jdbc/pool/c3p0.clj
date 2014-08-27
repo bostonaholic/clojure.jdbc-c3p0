@@ -13,31 +13,57 @@
 ;; limitations under the License.
 
 (ns jdbc.pool.c3p0
-  (:require [jdbc.pool :refer [normalize-dbspec]])
-  (:import (com.mchange.v2.c3p0 ComboPooledDataSource)))
+  (:require [jdbc.core :refer [uri->dbspec]])
+  (:import com.mchange.v2.c3p0.ComboPooledDataSource
+           java.net.URI))
+
+(defn- normalize-dbspec
+  "Normalizes a dbspec for connection pool implementations."
+  [{:keys [name vendor host port] :as dbspec}]
+  (cond
+   (or (string? dbspec) (instance? URI dbspec))
+   (uri->dbspec dbspec)
+
+   (and name vendor)
+   (let [host   (or host "127.0.0.1")
+         port   (if port (str ":" port) "")
+         dbspec (dissoc dbspec :name :vendor :host :port)]
+     (assoc dbspec
+       :subprotocol vendor
+       :subname (str "//" host port "/" name)))
+
+   (map? dbspec)
+   dbspec))
 
 (defn make-datasource-spec
   "Given a plain dbspec, convert it on datasource dbspec
   using c3p0 connection pool implementation."
   [dbspec]
-  (let [normalized (normalize-dbspec dbspec)]
-    (when (or (:factory normalized)
-              (:connection-uri normalized))
-      (throw (RuntimeException. "Can not create connection pool from dbspec with factory or connection-url")))
-    (when (:datasource normalized)
-      (throw (RuntimeException. "Already have datasource.")))
-    {:datasource (doto (ComboPooledDataSource.)
-                   (.setDriverClass (:classname normalized))
-                   (.setJdbcUrl (str "jdbc:"
-                                     (:subprotocol normalized) ":"
-                                     (:subname normalized)))
-                   (.setUser (:user normalized))
-                   (.setPassword (:password normalized))
-                   (.setMaxIdleTimeExcessConnections (:excess-timeout normalized (* 30 60)))
-                   (.setMaxIdleTime (:idle-timeout normalized (* 3 60 60)))
-                   (.setMinPoolSize (:min-pool-size normalized 3))
-                   (.setMaxPoolSize (:max-pool-size normalized 15))
-                   (.setIdleConnectionTestPeriod (:idle-connection-test-period normalized 0))
-                   (.setTestConnectionOnCheckin (:test-connection-on-checkin normalized false))
-                   (.setTestConnectionOnCheckout (:test-connection-on-checkout normalized false))
-                   (.setPreferredTestQuery (:test-connection-query normalized nil)))}))
+  (let [dbspec (normalize-dbspec dbspec)
+        ds     (ComboPooledDataSource.)]
+    (if (:connection-uri dbspec)
+      (.setJdbcUrl ds (:connection-uri dbspec))
+      (.setJdbcUrl ds (str "jdbc:"
+                       (:subprotocol dbspec) ":"
+                       (:subname dbspec))))
+    {:datasource (doto ds
+                   (.setDriverClass (:classname dbspec))
+                   (.setUser (:user dbspec))
+                   (.setPassword (:password dbspec))
+
+                   ;; Pool Size Management
+                   (.setMinPoolSize (:min-pool-size dbspec 3))
+                   (.setMaxPoolSize (:max-pool-size dbspec 15))
+                   (.setInitialPoolSize (:initial-pool-size dbspec 0))
+                   (.setCheckoutTimeout (:max-wait-millis dbspec 0))
+
+                   ;; Connection eviction
+                   (.setMaxConnectionAge (:max-connection-lifetime dbspec 3600))
+                   (.setMaxIdleTime (:max-connection-idle-lifetime dbspec 1800))
+                   (.setMaxIdleTimeExcessConnections 120)
+
+                   ;; Connection testing
+                   (.setPreferredTestQuery (:test-connection-query dbspec nil))
+                   (.setTestConnectionOnCheckin (:test-connection-on-borrow dbspec false))
+                   (.setTestConnectionOnCheckout (:test-connection-on-return dbspec false))
+                   (.setIdleConnectionTestPeriod (:test-idle-connections-period dbspec 800)))}))
