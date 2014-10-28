@@ -1,7 +1,12 @@
-(defproject clojure.jdbc/clojure.jdbc-c3p0 "0.3.0"
+(defproject clojure.jdbc/clojure.jdbc-c3p0 "0.3.1"
   :description "c3p0, a mature, highly concurrent JDBC connection pooling library for clojure.jdbc"
   :url "http://github.com/niwibe/clojure.jdbc-c3p0"
   :license {:name "Apache 2.0"
             :url "http://www.apache.org/licenses/LICENSE-2.0.txt"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [com.mchange/c3p0 "0.9.5-pre8"]])
+                 [clojure.jdbc "0.3.1"]
+                 [com.mchange/c3p0 "0.9.5-pre9"]]
+
+  :profiles {:dev {:dependencies [[com.h2database/h2 "1.3.176"]]}
+             :test {:jvm-opts ["-Dcom.mchange.v2.log.MLog=com.mchange.v2.log.FallbackMLog"
+                               "-Dcom.mchange.v2.log.FallbackMLog.DEFAULT_CUTOFF_LEVEL=OFF"]}})
