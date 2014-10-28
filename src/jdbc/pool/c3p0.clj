@@ -17,6 +17,11 @@
   (:import com.mchange.v2.c3p0.ComboPooledDataSource
            java.net.URI))
 
+(defrecord DataSource [datasource]
+  java.io.Closeable
+  (close [_]
+    (.close datasource)))
+
 (defn- normalize-dbspec
   "Normalizes a dbspec for connection pool implementations."
   [{:keys [name vendor host port] :as dbspec}]
@@ -46,24 +51,24 @@
       (.setJdbcUrl ds (str "jdbc:"
                        (:subprotocol dbspec) ":"
                        (:subname dbspec))))
-    {:datasource (doto ds
-                   (.setDriverClass (:classname dbspec))
-                   (.setUser (:user dbspec))
-                   (.setPassword (:password dbspec))
+    (->DataSource (doto ds
+                    (.setDriverClass (:classname dbspec))
+                    (.setUser (:user dbspec))
+                    (.setPassword (:password dbspec))
 
-                   ;; Pool Size Management
-                   (.setMinPoolSize (:min-pool-size dbspec 3))
-                   (.setMaxPoolSize (:max-pool-size dbspec 15))
-                   (.setInitialPoolSize (:initial-pool-size dbspec 0))
-                   (.setCheckoutTimeout (:max-wait-millis dbspec 0))
+                    ;; Pool Size Management
+                    (.setMinPoolSize (:min-pool-size dbspec 3))
+                    (.setMaxPoolSize (:max-pool-size dbspec 15))
+                    (.setInitialPoolSize (:initial-pool-size dbspec 0))
+                    (.setCheckoutTimeout (:max-wait-millis dbspec 0))
 
-                   ;; Connection eviction
-                   (.setMaxConnectionAge (:max-connection-lifetime dbspec 3600))
-                   (.setMaxIdleTime (:max-connection-idle-lifetime dbspec 1800))
-                   (.setMaxIdleTimeExcessConnections 120)
+                    ;; Connection eviction
+                    (.setMaxConnectionAge (:max-connection-lifetime dbspec 3600))
+                    (.setMaxIdleTime (:max-connection-idle-lifetime dbspec 1800))
+                    (.setMaxIdleTimeExcessConnections 120)
 
-                   ;; Connection testing
-                   (.setPreferredTestQuery (:test-connection-query dbspec nil))
-                   (.setTestConnectionOnCheckin (:test-connection-on-borrow dbspec false))
-                   (.setTestConnectionOnCheckout (:test-connection-on-return dbspec false))
-                   (.setIdleConnectionTestPeriod (:test-idle-connections-period dbspec 800)))}))
+                    ;; Connection testing
+                    (.setPreferredTestQuery (:test-connection-query dbspec nil))
+                    (.setTestConnectionOnCheckin (:test-connection-on-borrow dbspec false))
+                    (.setTestConnectionOnCheckout (:test-connection-on-return dbspec false))
+                    (.setIdleConnectionTestPeriod (:test-idle-connections-period dbspec 800))))))
