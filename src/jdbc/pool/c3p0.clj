@@ -52,23 +52,25 @@
                        (:subprotocol dbspec) ":"
                        (:subname dbspec))))
     (->DataSource (doto ds
-                    (.setDriverClass (:classname dbspec))
-                    (.setUser (:user dbspec))
-                    (.setPassword (:password dbspec))
+                    (.setDriverClass (:classname dbspec nil))
+                    (.setUser (:user dbspec nil))
+                    (.setPassword (:password dbspec nil))
 
                     ;; Pool Size Management
                     (.setMinPoolSize (:min-pool-size dbspec 3))
                     (.setMaxPoolSize (:max-pool-size dbspec 15))
                     (.setInitialPoolSize (:initial-pool-size dbspec 0))
-                    (.setCheckoutTimeout (:max-wait-millis dbspec 0))
+                    (.setCheckoutTimeout (:max-wait dbspec 0))
 
                     ;; Connection eviction
-                    (.setMaxConnectionAge (:max-connection-lifetime dbspec 3600))
-                    (.setMaxIdleTime (:max-connection-idle-lifetime dbspec 1800))
+                    (.setMaxConnectionAge (quot (:max-connection-lifetime dbspec 3600000) 1000))
+                    (.setMaxIdleTime (quot (:max-connection-idle-lifetime dbspec 1800000) 1000))
                     (.setMaxIdleTimeExcessConnections 120)
 
                     ;; Connection testing
                     (.setPreferredTestQuery (:test-connection-query dbspec nil))
                     (.setTestConnectionOnCheckin (:test-connection-on-borrow dbspec false))
                     (.setTestConnectionOnCheckout (:test-connection-on-return dbspec false))
-                    (.setIdleConnectionTestPeriod (:test-idle-connections-period dbspec 800))))))
+                    (.setIdleConnectionTestPeriod (quot
+                                                   (:test-idle-connections-period dbspec 800000)
+                                                   1000))))))
