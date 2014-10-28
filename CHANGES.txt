@@ -1,6 +1,13 @@
 Changelog
 =========
 
+Version 0.3.1
+-------------
+
+- Move tests from clojure.jdbc to this package.
+- Add explicit clojure.jdbc version dependency.
+- Datasource is now a record that implements java.io.Closeable
+
 
 Version 0.3.0
 -------------
