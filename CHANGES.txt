@@ -16,7 +16,7 @@ Version 0.3.0
 
 - Rewrite the datasource build process.
 - Unify parameters with others clojure.jdbc pools extensions.
-<Up>
+
 
 Version 0.2.0
 -------------
