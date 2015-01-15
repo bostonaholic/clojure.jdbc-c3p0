@@ -1,0 +1,72 @@
+= clojure.jdbc-c3p0
+
+c3p0, a mature, highly concurrent JDBC Connection pooling library
+for clojure.jdbc
+
+== Install
+
+Leiningen
+
+[source, clojure]
+----
+[clojure.jdbc/clojure.jdbc-c3p0 "0.3.2"]
+----
+
+Gradle
+
+[source, groovy]
+----
+compile "clojure.jdbc:clojure.jdbc-c3p0:0.3.2"
+----
+
+Maven
+
+[source, xml]
+----
+<dependency>
+  <groupId>clojure.jdbc</groupId>
+  <artifactId>clojure.jdbc-c3p0</artifactId>
+  <version>0.3.2</version>
+</dependency>
+----
+
+
+== Quick start
+
+In order to use a connection pool, you should convert your plain dbspec into a
+datasource-dbspec using the helper function provided in each extension.
+
+.Example using c3p0 connection pool
+[source,clojure]
+----
+;; Import the desired implementation
+(require '[jdbc.pool.c3p0 :as pool])
+
+;; Convert the standard dbspec to an other dbspec with `:datasource` key
+(def dbspec (pool/make-datasource-spec {:subprotocol "postgresql"
+                                        :subname "//localhost:5432/dbname"}))
+----
+
+Now, dbspec should be used like a plain dbspec for creating connections.
+
+
+== Configuration options
+
+c3p0 comes with "good" defaults that should work in majority standard environments,
+but obviously, it exposes set of options for customize it:
+
+[options="header"]
+|============================================================================
+| Option                          | Description
+| `:min-pool-size`                | Minimum number of Connections a pool will maintain at any given time.
+| `:max-pool-size`                | Maximum number of Connections a pool will maintain at any given time.
+| `:initial-pool-size`            | Number of Connections a pool will try to acquire upon startup.
+| `:max-wait`                     | The number of milliseconds a client calling getConnection() will wait for a Connection to be checked-in or acquired when the pool is exhausted.
+| `:max-connection-lifetime`      | The maximum lifetime in milliseconds of a connection.
+| `:test-connection-query`        | The SQL query that will be used to validate connections from this pool before returning them to the caller. If specified, this query MUST be an SQL SELECT statement that returns at least one row. If not specified, connections will be validation by calling the isValid() method.
+| `:test-connection-on-borrow`    | The indication of whether objects will be validated before being borrowed from the pool.
+| `:test-connection-on-return`    | The indication of whether objects will be validated before being returned to the pool.
+| `:test-idle-connections-period` | The number of milliseconds to sleep between runs of the idle object evictor thread.
+| `:max-connection-idle-lifetime` | The minimum amount of time (in milliseconds) an object may sit idle in the pool before it is eligable for eviction by the idle object evictor (if any).
+|============================================================================
+
