@@ -13,9 +13,38 @@
 ;; limitations under the License.
 
 (ns jdbc.pool.c3p0
-  (:require [jdbc.core :refer [uri->dbspec]])
+  (:require [clojure.string :as str]
+            [clojure.walk :as walk])
   (:import com.mchange.v2.c3p0.ComboPooledDataSource
            java.net.URI))
+
+(defn- querystring->map
+  "Given a URI instance, return its querystring as
+  plain map with parsed keys and values."
+  [^URI uri]
+  (let [^String query (.getQuery uri)]
+    (->> (for [^String kvs (.split query "&")] (into [] (.split kvs "=")))
+         (into {})
+         (walk/keywordize-keys))))
+
+(defn- uri->dbspec
+  "Parses a dbspec as uri into a plain dbspec. This function
+  accepts `java.net.URI` or `String` as parameter."
+  [^URI uri]
+  (let [host (.getHost uri)
+        port (.getPort uri)
+        path (.getPath uri)
+        scheme (.getScheme uri)
+        userinfo (.getUserInfo uri)]
+    (merge
+      {:subname (if (pos? port)
+                 (str "//" host ":" port path)
+                 (str "//" host path))
+       :subprotocol scheme}
+      (when userinfo
+        (let [[user password] (str/split userinfo #":")]
+          {:user user :password password}))
+      (querystring->map uri))))
 
 (defrecord DataSource [datasource]
   java.io.Closeable
