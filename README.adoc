@@ -70,3 +70,10 @@ but obviously, it exposes set of options for customize it:
 | `:max-connection-idle-lifetime` | The minimum amount of time (in milliseconds) an object may sit idle in the pool before it is eligable for eviction by the idle object evictor (if any).
 |============================================================================
 
+
+== Additional notes
+
+Since clojure.jdbc 0.4.0-beta1, packages like this is not the recommended way to setup the
+connection pool. It provides the basic setup. If you want more control and access to all
+options, consider using the dbcp directly as documented in http://niwibe.github.io/clojure.jdbc/latest/#connection-pooloptions.
+
