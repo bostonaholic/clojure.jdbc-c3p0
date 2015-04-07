@@ -31,7 +31,7 @@
 
 (defn- uri->dbspec
   "Parses a dbspec as uri into a plain dbspec. This function accepts
-  a `java.net.URI` instane as parameter."
+  a `java.net.URI` instance as parameter."
   [^URI uri]
   (let [host (.getHost uri)
         port (.getPort uri)
