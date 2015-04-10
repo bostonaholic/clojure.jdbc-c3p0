@@ -23,13 +23,15 @@
   plain map with parsed keys and values."
   [^URI uri]
   (let [^String query (.getQuery uri)]
-    (->> (for [^String kvs (.split query "&")] (into [] (.split kvs "=")))
-         (into {})
-         (walk/keywordize-keys))))
+    (if (nil? query)
+      {}
+      (->> (for [^String kvs (.split query "&")] (into [] (.split kvs "=")))
+           (into {})
+           (walk/keywordize-keys)))))
 
 (defn- uri->dbspec
-  "Parses a dbspec as uri into a plain dbspec. This function
-  accepts `java.net.URI` or `String` as parameter."
+  "Parses a dbspec as uri into a plain dbspec. This function accepts
+  a `java.net.URI` instance as parameter."
   [^URI uri]
   (let [host (.getHost uri)
         port (.getPort uri)
@@ -52,11 +54,12 @@
     (.close datasource)))
 
 (defn- normalize-dbspec
-  "Normalizes a dbspec for connection pool implementations."
+  "Normalizes a dbspec for connection pool implementations. Accepts a string,
+   URI instance or dbspec map as parameter"
   [{:keys [name vendor host port] :as dbspec}]
   (cond
-   (or (string? dbspec) (instance? URI dbspec))
-   (uri->dbspec dbspec)
+   (string? dbspec) (uri->dbspec (URI. dbspec))
+   (instance? URI dbspec) (uri->dbspec)
 
    (and name vendor)
    (let [host   (or host "127.0.0.1")
