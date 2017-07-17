@@ -1,6 +1,21 @@
 Changelog
 =========
 
+Version 0.3.3
+-------------
+
+- Accept string db-uri as parameter and don't crash if there are no query parameters
+- Update version of dependency: com.mchange/c3p0 0.9.5.2
+- Update version of dev dependency: clojure.jdbc 0.4.0
+- Update version of dev dependency: com.h2database/h2 1.4.196
+
+
+Version 0.3.2
+-------------
+
+- Remove explicit dependency to clojure.jdbc
+
+
 Version 0.3.1
 -------------
 
