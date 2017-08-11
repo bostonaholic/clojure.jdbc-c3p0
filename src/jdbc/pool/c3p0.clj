@@ -75,8 +75,8 @@
 (defn make-datasource-spec
   "Given a plain dbspec, convert it on datasource dbspec
   using c3p0 connection pool implementation."
-  [dbspec]
-  (let [dbspec (normalize-dbspec dbspec)
+  [dbspec & [opts]]
+  (let [dbspec (merge (normalize-dbspec dbspec) opts)
         ds     (ComboPooledDataSource.)]
     (if (:connection-uri dbspec)
       (.setJdbcUrl ds (:connection-uri dbspec))
