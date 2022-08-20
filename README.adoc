@@ -9,14 +9,14 @@ Leiningen
 
 [source, clojure]
 ----
-[clojure.jdbc/clojure.jdbc-c3p0 "0.3.3"]
+[clojure.jdbc/clojure.jdbc-c3p0 "0.3.4"]
 ----
 
 Gradle
 
 [source, groovy]
 ----
-compile "clojure.jdbc:clojure.jdbc-c3p0:0.3.3"
+compile "clojure.jdbc:clojure.jdbc-c3p0:0.3.4"
 ----
 
 Maven
@@ -26,7 +26,7 @@ Maven
 <dependency>
   <groupId>clojure.jdbc</groupId>
   <artifactId>clojure.jdbc-c3p0</artifactId>
-  <version>0.3.3</version>
+  <version>0.3.4</version>
 </dependency>
 ----
 

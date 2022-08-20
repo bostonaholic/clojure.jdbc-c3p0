@@ -1,6 +1,11 @@
 Changelog
 =========
 
+Version 0.3.4
+-------------
+
+- Update version of dependency: com.mchange/c3p0 0.9.5.4
+
 Version 0.3.3
 -------------
 

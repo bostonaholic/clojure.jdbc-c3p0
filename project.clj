@@ -1,4 +1,4 @@
-(defproject clojure.jdbc/clojure.jdbc-c3p0 "0.3.4-SNAPSHOT"
+(defproject clojure.jdbc/clojure.jdbc-c3p0 "0.3.4"
   :description "c3p0, a mature, highly concurrent JDBC connection pooling library for clojure.jdbc"
   :url "https://github.com/bostonaholic/clojure.jdbc-c3p0"
   :license {:name "Apache 2.0"
